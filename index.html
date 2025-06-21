@@ -1,59 +1,32 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <title>Prueba Firebase</title>
 </head>
+
 <body>
-  <h1>Guardar y mostrar datos con Firebase</h1>
+  <h1>Guardar y mostrar datos con Supabase</h1>
 
   <input id="nombre" placeholder="Escribe tu nombre">
   <button onclick="guardar()">Guardar</button>
 
-  <h2>Usuarios guardados:</h2>
-  <ul id="listaUsuarios"></ul>
 
-  <!-- Scripts de Firebase para navegador (CDN) -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
 
   <script>
-    // Tu configuración de Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyBnpSsdhQM2RKoOzzfA4xDEArAEmfZh3Lo",
-      // 
-      authDomain: "pruebafirebase-e8ab3.firebaseapp.com",
-      databaseURL: "https://console.firebase.google.com/project/pruebafirebase-e8ab3/database/pruebafirebase-e8ab3-default-rtdb/data/~2F" // IMPORTANTE
-      projectId: "pruebafirebase-e8ab3",
-      storageBucket: "pruebafirebase-e8ab3.appspot.com",
-      messagingSenderId: "685337039187",
-      appId: "1:685337039187:web:a3095bae69a26879d411a6"
-    };
+    import { createClient } from '@supabase/supabase-js';
 
-    // Inicializa Firebase
-    const app = firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const supabaseUrl = 'https://sqdjywwbdizqwozyaumf.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNxZGp5d3diZGl6cXdvenlhdW1mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA1MzQ5NjgsImV4cCI6MjA2NjExMDk2OH0.i1tvFAztuyYJCdD2N1VxogG9hZZSq9t0pE1ybPlR3MQ';
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Guardar nombre
-    function guardar() {
-      const nombre = document.getElementById("nombre").value;
-      if (nombre.trim() === "") return;
-
-      const ref = db.ref("usuarios").push();
-      ref.set({ nombre: nombre });
-    }
-
-    // Mostrar datos en tiempo real
-    db.ref("usuarios").on("value", (snapshot) => {
-      const lista = document.getElementById("listaUsuarios");
-      lista.innerHTML = "";
-
-      const data = snapshot.val();
-      for (let id in data) {
-        const li = document.createElement("li");
-        li.textContent = data[id].nombre;
-        lista.appendChild(li);
-      }
-    });
+    async function getProductos() {
+  const { data, error } = await supabase.from('usuarios').select('*');
+  console.log(data); // Muestra los productos
+}
+getProductos();
   </script>
 </body>
+
 </html>
