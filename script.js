@@ -1,4 +1,5 @@
-import "inc/database.js";
+import "./inc/database.js";
+
 
 const names = [];
 const name = document.getElementById("name");
