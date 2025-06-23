@@ -1,4 +1,4 @@
-import "./inc/database.js";
+import { supabase } from "./inc/database.js";
 
 
 const names = [];
