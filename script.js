@@ -4,8 +4,7 @@ const addNameButton = document.getElementById("addName");
 const nameList = document.getElementById("nameList");
 let namesChannel;
 
-// Función optimizada para mostrar nombres
-async function UpdatesNames() {
+async function updateNamesList() {
     const { data, error } = await supabase
         .from('names')
         .select('*')
@@ -16,67 +15,61 @@ async function UpdatesNames() {
         return;
     }
 
-    const fragment = document.createDocumentFragment();
-    data.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = item.name;
-        fragment.appendChild(li);
-    });
-    
-    nameList.innerHTML = "";
-    nameList.appendChild(fragment);
+    nameList.innerHTML = data.map(item => 
+        `<li>${item.name}</li>`
+    ).join('');
 }
 
-// Configuración Realtime mejorada
 const setupRealtime = () => {
+    // Evita múltiples suscripciones
     if (namesChannel) return;
-    
-    namesChannel = supabase
-        .channel('names-updates')
-        .on('postgres_changes', { 
+
+    namesChannel = supabase.channel('names-updates')
+        .on('postgres_changes', {
             event: '*',
-            schema: 'public', 
-            table: 'names' 
-        }, (payload) => {
-            console.log(`Change (${payload.event}):`, payload.new || payload.old);
-            UpdatesNames();
-        })
+            schema: 'public',
+            table: 'names'
+        }, () => updateNamesList())
         .subscribe((status, err) => {
-            if (err) console.error("Subscription error:", err);
-            console.log("Channel status:", status);
+            if (status === 'SUBSCRIBED') {
+                console.log('Canal suscrito correctamente');
+            }
+            if (err) {
+                console.error('Error en suscripción:', err);
+            }
         });
 };
 
 // Inicialización
-window.addEventListener("DOMContentLoaded", async () => {
-    await UpdatesNames();
-    setupRealtime();
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        await updateNamesList();
+        setupRealtime();
+    } catch (err) {
+        console.error("Error inicial:", err);
+    }
 });
 
-// Limpieza
-window.addEventListener("beforeunload", () => {
-    if (namesChannel) supabase.removeChannel(namesChannel);
-});
-
-// Inserción con validación
+// Insertar nombre
 addNameButton.addEventListener("click", async () => {
     const nameInput = document.getElementById("name");
     const name = nameInput.value.trim();
-    
-    if (!name) {
-        alert("Por favor ingresa un nombre");
-        return;
-    }
+
+    if (!name) return;
 
     const { error } = await supabase
         .from('names')
         .insert([{ name }]);
 
     if (error) {
-        console.error("Error inserting name:", error);
-        alert("Error al guardar el nombre");
+        console.error("Error insertando:", error);
         return;
     }
-    
+
     nameInput.value = "";
+});
+
+// Limpieza
+window.addEventListener('beforeunload', () => {
+    if (namesChannel) supabase.removeChannel(namesChannel);
 });
