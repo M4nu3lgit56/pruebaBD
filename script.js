@@ -2,11 +2,11 @@ import "./inc/database.js";
 
 
 const names = [];
-const name = document.getElementById("name");
 const addNameButton = document.getElementById("addName");
 const nameList = document.getElementById("nameList");
 
 addNameButton.addEventListener("click", async () => {
+    const name = document.getElementById("name");
     names.push(name.value);
     name.value = "";
     const { data, error } = await supabase
