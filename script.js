@@ -15,11 +15,25 @@ addNameButton.addEventListener("click", async () => {
     if (error) {
         console.error("Error inserting name:", error);
     }
+    if (!data || data.length === 0) return;
 
-    data.forEach(e => {
-        const li = document.createElement("li");
-        li.textContent = e.name;
-        nameList.appendChild(li);
+    console.log("Inserted name:", data);
+
+    data.forEach(e => async () => {
+        // Primero limpiamos la lista
+        nameList.innerHTML = "";
+
+        // Luego obtenemos TODOS los nombres de la base de datos
+        const { data: allNames, error: fetchError } = await supabase
+            .from('names')
+            .select('*');
+
+        if (!fetchError) {
+            allNames.forEach(item => {
+                const li = document.createElement("li");
+                li.textContent = item.name;
+                nameList.appendChild(li);
+            });
+        }
     });
 });
-
