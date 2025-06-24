@@ -5,17 +5,17 @@ const nameList = document.getElementById("nameList");
 let namesChannel;
 
 async function updateNamesList() {
-    const { data, error } = await supabase
+
+    let { data: names, error } = await supabase
         .from('names')
         .select('*')
-        .order('created_at', { ascending: false });
 
     if (error) {
         console.error("Error fetching names:", error);
         return;
     }
 
-    nameList.innerHTML = data.map(item => 
+    nameList.innerHTML = names.map(item =>
         `<li>${item.name}</li>`
     ).join('');
 }
