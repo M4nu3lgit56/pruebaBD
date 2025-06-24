@@ -1,7 +1,7 @@
 import { supabase } from "./inc/database.js";
 
 const addNameButton = document.getElementById("addName");
-const nameList = document.getElementById("nameList");
+const nameList = document.getElementById("namesList");
 let namesChannel;
 
 async function updateNamesList() {
@@ -21,7 +21,6 @@ async function updateNamesList() {
 }
 
 const setupRealtime = () => {
-    // Evita múltiples suscripciones
     if (namesChannel) return;
 
     namesChannel = supabase.channel('names-updates')
@@ -40,7 +39,6 @@ const setupRealtime = () => {
         });
 };
 
-// Inicialización
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         await updateNamesList();
@@ -50,7 +48,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 });
 
-// Insertar nombre
 addNameButton.addEventListener("click", async () => {
     const nameInput = document.getElementById("name");
     const name = nameInput.value.trim();
@@ -69,7 +66,6 @@ addNameButton.addEventListener("click", async () => {
     nameInput.value = "";
 });
 
-// Limpieza
 window.addEventListener('beforeunload', () => {
     if (namesChannel) supabase.removeChannel(namesChannel);
 });
