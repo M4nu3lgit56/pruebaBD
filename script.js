@@ -6,7 +6,7 @@ let namesChannel;
 
 async function updateNamesList() {
 
-    let { data: names, error } = await supabase
+    let { data, error } = await supabase
         .from('names')
         .select('*')
 
@@ -15,8 +15,8 @@ async function updateNamesList() {
         return;
     }
 
-    nameList.innerHTML = names.map(item =>
-        `<li>${item.name}</li>`
+    nameList.innerHTML = data.map(item =>
+        `<li>${item.name} <input type="button" onclick="delete Name(${item.id})" value="Borrar"></li>`
     ).join('');
 }
 
