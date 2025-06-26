@@ -20,7 +20,7 @@ async function updateNamesList() {
     ).join('');
 }
 
-async function deleteName(id) {
+window.deleteName = async function(id) {
     const { data, error } = await supabase
   .from('names')
   .delete()
