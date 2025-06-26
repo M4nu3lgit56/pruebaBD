@@ -16,8 +16,20 @@ async function updateNamesList() {
     }
 
     nameList.innerHTML = data.map(item =>
-        `<li>${item.name} <input type="button" onclick="delete Name(${item.id})" value="Borrar"></li>`
+        `<li>${item.name} <input type="button" onclick="deleteName(${item.id})" value="Borrar"></li>`
     ).join('');
+}
+
+async function deleteName(id) {
+    const { data, error } = await supabase
+  .from('names')
+  .delete()
+  .eq('id', id)
+  
+  if (error) {
+        console.error("Error borrando:", error);
+        return;
+    }
 }
 
 const setupRealtime = () => {
